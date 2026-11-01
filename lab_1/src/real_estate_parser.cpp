@@ -1,20 +1,49 @@
-#include <regex>
-
 #include "real_estate_parser.h"
+
+#include <optional>
+#include <regex>
+#include <string>
+#include <vector>
+
 #include "date.h"
 
+namespace {
+const std::regex kOwner(R"re("([^"]+)")re");
+const std::regex kDate(R"re((?:^|\s)(\d{4})\.(\d{2})\.(\d{2})(?=\s|$))re");
+const std::regex kCost(R"re((?:^|\s)(\d{1,9})(?=\s|$))re");
 
-std::optional<RealEstate> RealEstateParser::Parse(const std::string &line) const {
-    static const std::regex pattern(R"re(\s*Недвижимость\s+"([^"]+)"\s+(\d{4})\.(\d{2})\.(\d{2})\s+(-?\d+)\s*)re");
+std::optional<std::vector<std::string> > FindOnly(const std::string &text,
+                                                  const std::regex &re) {
+  std::sregex_iterator it(text.begin(), text.end(), re);
+  const std::sregex_iterator end;
+  if (it == end) return std::nullopt;
+  std::vector<std::string> groups;
+  for (size_t i = 1; i < it->size(); ++i) {
+    groups.push_back((*it)[i].str());
+  }
+  if (++it != end) return std::nullopt;
+  return groups;
+}
 
-    std::smatch match;
-    if (!std::regex_match(line, match, pattern)) {
-        return std::nullopt;
-    }
-    if (!Date::IsValid(std::stoi(match[2].str()), std::stoi(match[3].str()), std::stoi(match[4].str()))) {
-        return std::nullopt;
-    }
-    return RealEstate(match[1].str(), std::stoi(match[2].str()),
-                      std::stoi(match[3].str()), std::stoi(match[4].str()),
-                      std::stoll(match[5].str()));
+std::optional<RealEstate> MakeEstate(const std::vector<std::string> &owner,
+                                     const std::vector<std::string> &date,
+                                     const std::vector<std::string> &cost) {
+  const int year = std::stoi(date[0]);
+  const int month = std::stoi(date[1]);
+  const int day = std::stoi(date[2]);
+  if (!Date::IsValid(year, month, day)) return std::nullopt;
+  return RealEstate(owner[0], year, month, day, std::stoul(cost[0]));
+}
+}  // namespace
+
+std::optional<RealEstate> RealEstateParser::Parse(
+    const std::string &line) const {
+  const auto owner = FindOnly(line, kOwner);
+  const std::string rest = std::regex_replace(
+      line, kOwner, " ");  // На случай если во владельце есть цыфры
+  const auto date = FindOnly(rest, kDate);
+  const auto cost = FindOnly(rest, kCost);
+
+  if (!owner || !date || !cost) return std::nullopt;
+  return MakeEstate(*owner, *date, *cost);
 }

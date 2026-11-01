@@ -6,10 +6,9 @@
 
 #include "real_estate.h"
 
-
 class RealEstateParser {
-public:
-    std::optional<RealEstate> Parse(const std::string &line) const;
+ public:
+  std::optional<RealEstate> Parse(const std::string &line) const;
 };
 
 #endif
