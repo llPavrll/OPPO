@@ -1,11 +1,10 @@
 #include "real_estate_parser.h"
 
+#include <chrono>
 #include <optional>
 #include <regex>
 #include <string>
 #include <vector>
-
-#include "date.h"
 
 namespace {
 const std::regex kOwner(R"re("([^"]+)")re");
@@ -25,13 +24,21 @@ std::optional<std::vector<std::string> > FindOnly(const std::string &text,
   return groups;
 }
 
+bool IsValidDate(int year, int month, int day) {
+  return std::chrono::year_month_day(
+             std::chrono::year(year),
+             std::chrono::month(static_cast<unsigned>(month)),
+             std::chrono::day(static_cast<unsigned>(day)))
+      .ok();
+}
+
 std::optional<RealEstate> MakeEstate(const std::vector<std::string> &owner,
                                      const std::vector<std::string> &date,
                                      const std::vector<std::string> &cost) {
   const int year = std::stoi(date[0]);
   const int month = std::stoi(date[1]);
   const int day = std::stoi(date[2]);
-  if (!Date::IsValid(year, month, day)) return std::nullopt;
+  if (!IsValidDate(year, month, day)) return std::nullopt;
   return RealEstate(owner[0], year, month, day, std::stoul(cost[0]));
 }
 }  // namespace

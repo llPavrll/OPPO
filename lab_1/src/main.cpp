@@ -24,8 +24,8 @@ std::vector<RealEstate> ReadEstates(std::ifstream& file) {
 }
 
 void PrintEstates(const std::vector<RealEstate>& estates) {
-  for (size_t i = 0; i < estates.size(); i++) {
-    std::cout << estates[i] << "\n";
+  for (const auto& item : estates) {
+    std::cout << item << "\n";
   }
 }
 

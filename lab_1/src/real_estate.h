@@ -1,29 +1,27 @@
 #ifndef REAL_ESTATE_H_
 #define REAL_ESTATE_H_
 
+#include <chrono>
 #include <cstdint>
-#include <ostream>
 #include <string>
-
-#include "date.h"
 
 class RealEstate {
  public:
-  RealEstate(const std::string &owner, const Date &date, unsigned long cost);
-
-  RealEstate(const std::string &owner, int year, int month, int day,
+  RealEstate(const std::string& owner, std::chrono::year_month_day date,
+             unsigned long cost);
+  RealEstate(const std::string& owner, int year, int month, int day,
              unsigned long cost);
 
-  const std::string &getOwner() const { return owner_; }
-  const Date &getDate() const { return date_; }
-  long long getCost() const { return cost_; }
+  const std::string& getOwner() const { return owner_; }
+  std::chrono::year_month_day getDate() const { return date_; }
+  unsigned long getCost() const { return cost_; }
 
  private:
   std::string owner_;
-  Date date_;
-  uint64_t cost_;
+  std::chrono::year_month_day date_;
+  unsigned long cost_;
 };
 
-std::ostream &operator<<(std::ostream &out, const RealEstate &estate);
+std::ostream& operator<<(std::ostream& out, const RealEstate& estate);
 
 #endif
