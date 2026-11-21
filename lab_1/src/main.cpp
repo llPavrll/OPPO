@@ -29,6 +29,45 @@ void PrintEstates(const std::vector<RealEstate>& estates) {
   }
 }
 
+void PrintMenu() {
+  std::cout << "\n1. Показать все\n"
+            << "0. Выход\n"
+            << "Выбор: ";
+}
+
+int ReadChoice() {
+  int choice = -1;
+  if (!(std::cin >> choice)) {
+    if (std::cin.eof()) return 0;
+    std::cin.clear();
+    std::cin.ignore(1000, '\n');
+    return -1;
+  }
+  return choice;
+}
+
+// Выполняет пункт меню. Возвращает false, если нужно выйти.
+bool HandleChoice(int choice, std::vector<RealEstate>& estates) {
+  switch (choice) {
+    case 1:
+      PrintEstates(estates);
+      return true;
+    case 0:
+      return false;
+    default:
+      std::cout << "Неизвестный пункт\n";
+      return true;
+  }
+}
+
+void RunMenu(std::vector<RealEstate>& estates) {
+  bool running = true;
+  while (running) {
+    PrintMenu();
+    running = HandleChoice(ReadChoice(), estates);
+  }
+}
+
 int main() {
   SetConsoleOutputCP(CP_UTF8);
   std::ifstream file("C:/Users/Povr/Desktop/OPPO/lab_1/untitled/input.txt");
@@ -37,7 +76,7 @@ int main() {
     std::cout << "Файл не найден\n";
     return 1;
   }
-
-  PrintEstates(ReadEstates(file));
+  std::vector<RealEstate> estates = ReadEstates(file);
+  RunMenu(estates);
   return 0;
 }
