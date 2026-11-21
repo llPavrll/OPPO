@@ -7,6 +7,7 @@
 
 #include "real_estate.h"
 #include "real_estate_parser.h"
+#include "sort_estates.h"
 
 std::vector<RealEstate> ReadEstates(std::ifstream& file) {
   const RealEstateParser parser;
@@ -31,6 +32,7 @@ void PrintEstates(const std::vector<RealEstate>& estates) {
 
 void PrintMenu() {
   std::cout << "\n1. Показать все\n"
+            << "2. Сортировка по цене\n"
             << "0. Выход\n"
             << "Выбор: ";
 }
@@ -50,6 +52,10 @@ int ReadChoice() {
 bool HandleChoice(int choice, std::vector<RealEstate>& estates) {
   switch (choice) {
     case 1:
+      PrintEstates(estates);
+      return true;
+    case 2:
+      SortByCost(estates);
       PrintEstates(estates);
       return true;
     case 0:
