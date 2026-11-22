@@ -10,4 +10,6 @@ add_executable(lab1
         src/real_estate.h
         src/real_estate_parser.cpp
         src/real_estate_parser.h
+        src/date_filter.cpp
+        src/date_filter.h
 )

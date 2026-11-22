@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "date_filter.h"
 #include "real_estate.h"
 #include "real_estate_parser.h"
 
@@ -31,6 +32,7 @@ void PrintEstates(const std::vector<RealEstate>& estates) {
 
 void PrintMenu() {
   std::cout << "\n1. Показать все\n"
+            << "2. Фильтр по датам\n"
             << "0. Выход\n"
             << "Выбор: ";
 }
@@ -46,11 +48,13 @@ int ReadChoice() {
   return choice;
 }
 
-// Выполняет пункт меню. Возвращает false, если нужно выйти.
 bool HandleChoice(int choice, std::vector<RealEstate>& estates) {
   switch (choice) {
     case 1:
       PrintEstates(estates);
+      return true;
+    case 2:
+      RunDateFilter(estates);
       return true;
     case 0:
       return false;
